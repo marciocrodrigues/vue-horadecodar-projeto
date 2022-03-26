@@ -24,19 +24,13 @@ export default {
   * {
     font-family: Helvetica;
     padding: 0;
-    margin: 0 auto;
+    margin: 0;
     box-sizing: border-box;
   }
-
-  body {
-    height: 100vh;
-  }
-
   .main-container {
     margin: 50px;
     min-height: 250px;
   }
-
   h1 {
     text-align: center;
     font-size: 42px;
