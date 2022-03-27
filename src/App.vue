@@ -1,7 +1,9 @@
 <template>
-  <Navbar :logo="logo_src" :alt="app_name" />
-  <router-view/>
-  <Footer />
+  <div id="content">
+    <Navbar :logo="logo_src" :alt="app_name" />
+    <router-view/>
+    <Footer />
+  </div>
 </template>
 <script>
 import Navbar from './components/Navbar.vue';
@@ -27,9 +29,13 @@ export default {
     margin: 0;
     box-sizing: border-box;
   }
+  #content {
+    height: 100vh;
+  }
   .main-container {
     margin: 50px;
     min-height: 250px;
+    height: 67%;
   }
   h1 {
     text-align: center;
