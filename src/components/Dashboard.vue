@@ -1,36 +1,39 @@
 <template>
-    <div id="burger-table">
-        <div>
-            <div id="burger-table-heading">
-                <div class="order-id">#:</div>
-                <div>Cliente:</div>
-                <div>Pão:</div>
-                <div>Carne:</div>
-                <div>Opcionais:</div>
-                <div>Ações:</div>
-            </div>
-        </div>
-        <div id="burger-table-rows">
-            <div class="burger-table-row" v-for="burger in burgers" :key="burger.id">
-                <div class="order-number">{{ burger.id }}</div>
-                <div>{{burger.nome}}</div>
-                <div>{{burger.pao}}</div>
-                <div>{{burger.carne}}</div>
-                <div>
-                    <ul>
-                        <li v-for="(opcional, index) in burger.opcionais" :key="index">
-                            {{opcional}}
-                        </li>
-                    </ul>
+    <div>
+        <Message :msg="msg" v-show="msg" />
+        <div id="burger-table">
+            <div>
+                <div id="burger-table-heading">
+                    <div class="order-id">#:</div>
+                    <div>Cliente:</div>
+                    <div>Pão:</div>
+                    <div>Carne:</div>
+                    <div>Opcionais:</div>
+                    <div>Ações:</div>
                 </div>
-                <div>
-                    <select name="status" class="status">
-                        <option value="">Selecione</option>
-                        <option v-for="s in status" :key="s.id" :value="s.tipo" :selected="burger.status == s.tipo">
-                            {{s.tipo}}
-                        </option>
-                    </select>
-                    <button class="delete-btn" @click="deleteBurger(burger.id)">Cancelar</button>
+            </div>
+            <div id="burger-table-rows">
+                <div class="burger-table-row" v-for="burger in burgers" :key="burger.id">
+                    <div class="order-number">{{ burger.id }}</div>
+                    <div>{{burger.nome}}</div>
+                    <div>{{burger.pao}}</div>
+                    <div>{{burger.carne}}</div>
+                    <div>
+                        <ul>
+                            <li v-for="(opcional, index) in burger.opcionais" :key="index">
+                                {{opcional}}
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <select name="status" class="status" @change="updateBurger($event, burger.id)">
+                            <option value="">Selecione</option>
+                            <option v-for="s in status" :key="s.id" :value="s.tipo" :selected="burger.status == s.tipo">
+                                {{s.tipo}}
+                            </option>
+                        </select>
+                        <button class="delete-btn" @click="deleteBurger(burger.id)">Cancelar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,13 +41,16 @@
 </template>
 
 <script>
+import Message from './Message.vue';
+
 export default {
     name: 'Dashboard',
     data() {
         return {
             burgers: null,
             burger_id: null,
-            status: []
+            status: [],
+            msg: null
         }
     },
     methods: {
@@ -71,13 +77,40 @@ export default {
 
             const res = await req.json();
 
-            // msg
+            this.msg = `O Pedido removido com sucesso`;
+
+            this.esconderMensagem(3000);
 
             this.getPedidos();
+        },
+        async updateBurger(event, id) {
+            const option = event.target.value;
+
+            const dataJson = JSON.stringify({ status: option });
+
+            const req = await fetch(`http://localhost:3000/burgers/${id}`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'Application/json'},
+                body: dataJson
+            });
+
+            const res = await req.json();
+
+            this.msg = `O Pedido número ${res.id} foi atualizado para ${res.status}`;
+
+            this.esconderMensagem(3000);
+        },
+        esconderMensagem(time) {
+            setTimeout(() => {
+                this.msg = '';
+            }, time)
         }
     },
     mounted() {
         this.getPedidos();
+    },
+    components: {
+        Message
     }
 }
 </script>
